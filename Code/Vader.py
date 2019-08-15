@@ -7,7 +7,6 @@ from pyspark.sql import SQLContext
 from nltk.corpus import stopwords
 from nltk import tokenize
 from nltk.stem import WordNetLemmatizer
-from pyspark.sql.functions import col,udf
 from pyspark.ml import Pipeline,Transformer
 from pyspark.ml.classification import LogisticRegression,GBTClassifier
 from pyspark.ml.feature import HashingTF, Tokenizer, IDF, StopWordsRemover,StringIndexer,VectorAssembler
@@ -73,7 +72,7 @@ def binary_lablel(x):
         return 0.0
 
 # Prints the Schema for the read in 
-print readin.printSchema()
+print(readin.printSchema())
 ###############################################################################################
 # Read in the data and only take the needed columns
 ###############################################################################################
@@ -85,10 +84,10 @@ text = text.map(lambda x: [x[1:-1].split(",")[0][2:-1].strip(), float(x[1:-1].sp
 text = text.toDF(['review_id','vader'])
 
 # Checking how each DF look 
-print text.show() 
-print text_to_token.show()
-print text.printSchema()
-print text_to_token.printSchema()
+print(text.show())
+print(text_to_token.show())
+print(text.printSchema())
+print(text_to_token.printSchema())
 
 # Join both DF on review_id
 text_to_token = text_to_token.join(text, 'review_id' )
@@ -99,7 +98,7 @@ text_to_token = text_to_token.join(text, 'review_id' )
 # gets the right data frame only for Spark 2.2 
 text_to_token = text_to_token.rdd.map(lambda x: [x[0],x[1],x[2], x[3]]).toDF(['review_id','text','label','vader'])
 
-print text_to_token.show(),"\n"
+print(text_to_token.show(),"\n")
 ###############################################################################################
 #### Logistic Regression Pipeline ####
 ###############################################################################################
@@ -138,7 +137,7 @@ lr_model = pipeline.fit(train)
 # Make predictions on test set
 lr_prediction = lr_model.transform(test)
 # Schema of prediction outcome
-print lr_prediction.printSchema()
+print(lr_prediction.printSchema())
 
 lr_model.save('./Model_Vader_binary')
 
@@ -154,8 +153,8 @@ print("Accuracy = %s" % accuracy)
 print("Precision = %s" % precision)
 print("Recall = %s" % recall)
 print("F1 Score = %s" % f1Score)
-print metrics.confusionMatrix().toArray()
-print "Total Time: ",time.time()-start_time
+print(metrics.confusionMatrix().toArray())
+print("Total Time: ",time.time()-start_time)
 # Parallelize all information: tp, tn, fp,fn,total, recall, percision, start time, end time, total time 
 # This will be the output we'll be looking for.
 x = sc.parallelize(
@@ -163,7 +162,7 @@ x = sc.parallelize(
     )
 # Vader Results
 x.saveAsTextFile('/data/MSA_8050_Spring_19/2pm_6/Vader_Results_binary')
-print x.collect()
+print(x.collect())
 
 # Non Vader Results
 # x.saveAsTextFile('/data/MSA_8050_Spring_19/2pm_6/Normal_Results')

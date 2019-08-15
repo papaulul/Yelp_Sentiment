@@ -1,1 +1,4 @@
-/yelp_academic_dataset_review_sample.json
+data/*
+yelp/*
+.vscode/*
+Demo_Scrape/*

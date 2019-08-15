@@ -7,7 +7,6 @@ from nltk.corpus import stopwords
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from nltk import tokenize
 from nltk.stem import WordNetLemmatizer
-from pyspark.sql.functions import col,udf
 from pyspark.ml import Pipeline,Transformer
 from pyspark.ml.classification import LogisticRegression,GBTClassifier
 from pyspark.ml.feature import HashingTF, Tokenizer, IDF, StopWordsRemover,StringIndexer,VectorAssembler
@@ -48,7 +47,7 @@ elif loc == 'c':
 else: 
     readin = sc.textFile("/data/MSA_8050_Spring_19/2pm_6/VaderScores") 
     
-print readin.printSchema()
+print(readin.printSchema())
 ###############################################################################################
 # Read in the data and only take the needed columns
 vader = SentimentIntensityAnalyzer()
