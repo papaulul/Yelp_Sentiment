@@ -7,18 +7,10 @@ from nltk.corpus import stopwords
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from nltk import tokenize
 from nltk.stem import WordNetLemmatizer
-from pyspark.ml import Pipeline,Transformer
-from pyspark.ml.classification import LogisticRegression,GBTClassifier
-from pyspark.ml.feature import HashingTF, Tokenizer, IDF, StopWordsRemover,StringIndexer,VectorAssembler
-from pyspark.mllib.evaluation import MulticlassMetrics
-import time 
-from pyspark.ml.util import keyword_only  
-from pyspark.sql.types import DoubleType
-
+import time
 start_time = time.time()
-nltk.download('stopwords')
+nltk.download('vader_lexicon')
 # Set of all stopwords 
-swords = list(set(stopwords.words('english')))
 conf = SparkConf().setAppName("Yelp")
 sc = SparkContext(conf=conf)
 spark = SQLContext(sc)
@@ -37,15 +29,15 @@ Schema
 loc = 'c' # 'c'
 # Full
 if loc == 'f':
-    readin = spark.read.json("/data/MSA_8050_Spring_19/2pm_6/yelp_academic_dataset_review.json") 
+    readin = spark.read.json("../data/yelp_academic_dataset_review.json") 
     # There are 6685900 rows
 elif loc == 'c':
 # Sample
-    readin = spark.read.json("/data/MSA_8050_Spring_19/2pm_6/yelp_academic_dataset_review_sample.json") 
+    readin = spark.read.json("../data/yelp_academic_dataset_review_sample.json") 
     # There are 100 rows
 # Local
 else: 
-    readin = sc.textFile("/data/MSA_8050_Spring_19/2pm_6/VaderScores") 
+    readin = sc.textFile("../data/VaderScores") 
     
 print(readin.printSchema())
 ###############################################################################################
@@ -72,4 +64,4 @@ text = text.mapValues(lambda x: (x,1))
 text = text.reduceByKey(lambda x,y: (x[0]+y[0],x[1]+y[1]))
 # divide sum of score/number of sentences
 text = text.mapValues(lambda x: x[0]/x[1])
-text.saveAsTextFile('/data/MSA_8050_Spring_19/2pm_6/VaderScores_sample')
+text.saveAsTextFile('../data/VaderScores_sample')
