@@ -46,7 +46,7 @@ vader = SentimentIntensityAnalyzer()
 # turns DataFrame into RDD
 text = readin.rdd.map(list)
 # creates key value pair (review_id, [list of tokenized sentences])
-text = text.map(lambda x: (x[4],tokenize.sent_tokenize(x[6])))
+text = text.map(lambda x: (x[4],tokenize.sent_tokenize(str(x[6]))))
 # flat maps it so now it is (review_id, tokenized sentence)
 # So there will be duplicates of the key review_id with each sentence attached
 # to said review
