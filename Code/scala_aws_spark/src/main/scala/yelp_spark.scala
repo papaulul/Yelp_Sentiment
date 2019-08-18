@@ -5,13 +5,23 @@ import org.apache.spark.ml.feature.{HashingTF, Tokenizer, IDF, StopWordsRemover,
 import org.apache.spark.ml.classification.LogisticRegression
 import org.apache.spark.ml.{Pipeline, Transformer, PipelineModel}
 import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator
+import org.apache.spark.sql.functions.udf
 
 /** Computes an approximation to pi */
-object SparkPi {
+object yelp_spark {
+  def stars_sent(x: Double): Int = {
+    if (x>3)
+      return 3
+    else{
+      if (x<3)
+        return 1 
+      else 
+        return 2
+    }
+  }
+
   def main(args: Array[String]) {
     val time = System.nanoTime
-
-    
     val conf:SparkConf = new SparkConf().setAppName("Yelp")
     val sc = new SparkContext(conf:SparkConf)
     val spark = SparkSession.builder.getOrCreate()
@@ -19,10 +29,14 @@ object SparkPi {
     val readin = spark.read.json("s3://yelp-spark-project/yelp_academic_dataset_review.json")
     println(readin.printSchema())
     val columns = Seq("review_id","text","label")
-    val text_to_token = readin.select("review_id","text","stars").toDF(columns: _*)
-    println(text_to_token.show())
-    val Array(train, test) = text_to_token.randomSplit(Array(.8,.2),12345)
+    val text_to_token_col = readin.select("review_id","text","stars").toDF(columns: _*)
+    val text_to_tokens_udf = udf(stars_sent _)
+    import spark.implicits._
 
+    val text_to_token = text_to_token_col.withColumn("label",text_to_tokens_udf($"label"))
+    println(text_to_token.show())
+
+    val Array(train, test) = text_to_token.randomSplit(Array(.8,.2),12345)
 
     val tokenizer = new Tokenizer()
     .setInputCol("text")
@@ -77,7 +91,7 @@ object SparkPi {
       )
     )
     x.collect().foreach(println)
-    x.saveAsTextFile("s3://yelp-spark-project/output/scala_full_1")
+    x.saveAsTextFile("s3://yelp-spark-project/output/scala_full_2")
     spark.stop()
   }
 }
