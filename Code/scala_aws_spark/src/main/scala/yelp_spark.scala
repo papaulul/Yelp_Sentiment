@@ -9,10 +9,12 @@ import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator
 /** Computes an approximation to pi */
 object SparkPi {
   def main(args: Array[String]) {
+    val time = System.nanoTime
+
+    
     val conf:SparkConf = new SparkConf().setAppName("Yelp")
     val sc = new SparkContext(conf:SparkConf)
     val spark = SparkSession.builder.getOrCreate()
-    val time = System.nanoTime
     //val readin = spark.read.json("s3://yelp-spark-project/yelp_academic_dataset_review_sample.json")
     val readin = spark.read.json("s3://yelp-spark-project/yelp_academic_dataset_review.json")
     println(readin.printSchema())
@@ -67,11 +69,15 @@ object SparkPi {
     println("F1 Score = " + f1Score)
 
     val x = sc.parallelize(Seq(
-        accuracy, lr_prediction.count(),precision,recall, f1Score,time, System.nanoTime,(System.nanoTime- time) / 1e9d,"Accuracy","total","Precision","Recall","F1 Score","start","end", "total_time"
+      Seq(
+        accuracy, lr_prediction.count(),precision,recall, f1Score,time, System.nanoTime,(System.nanoTime- time) / 1e9d)
+        ,
+      Seq(
+        "Accuracy","total","Precision","Recall","F1 Score","start","end", "total_time")
       )
     )
     x.collect().foreach(println)
-    x.saveAsTextFile("s3://yelp-spark-project/output/scala_full")
+    x.saveAsTextFile("s3://yelp-spark-project/output/scala_full_1")
     spark.stop()
   }
 }
