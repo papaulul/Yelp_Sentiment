@@ -1,4 +1,4 @@
-name := "Simple Project"
+name := "Yelp Sentiment"
 
 version := "1.0"
 

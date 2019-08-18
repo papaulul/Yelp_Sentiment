@@ -1,14 +1,12 @@
 from pyspark import SparkConf, SparkContext
 from pyspark import sql
 from pyspark.sql import SQLContext
-from nltk.corpus import stopwords
 from pyspark.ml import Pipeline,Transformer
 from pyspark.ml.classification import LogisticRegression
 from pyspark.ml.feature import HashingTF, Tokenizer, IDF, StopWordsRemover,VectorAssembler
 from pyspark.mllib.evaluation import MulticlassMetrics
 import time 
 from pyspark.ml import PipelineModel
-
 # This is the timer 
 start_time = time.time()
 # Makes sure we have the stop words
@@ -30,16 +28,7 @@ Schema - Readin
  |-- useful: long (nullable = true)
  |-- user_id: string (nullable = true)
 """
-# Set to f, c, or anything else 
-location = 'c' # 'c'
-# Full Data set
-# There are 6685900 rows
-if location == 'f':
-    readin = spark.read.json("../data/yelp_academic_dataset_review.json") 
-# Sample
-# There are 100 rows
-elif location == 'c':
-    readin = spark.read.json("../data/yelp_academic_dataset_review_sample.json") 
+readin = spark.read.json("../../data/yelp_sample.json") 
 # Local
 # There are 100 rows
 # Prints the Schema for the read in 
@@ -118,9 +107,7 @@ print("F1 Score = %s" % f1Score)
 x = sc.parallelize(
     [(accuracy, lr_prediction.count(),precision,recall, f1Score,start_time, time.time(),time.time()- start_time),('Accuracy','total','Precision','Recall','F1 Score','start','end', 'total_time')]
     )
-# Vader Results
-##x.saveAsTextFile('/data/MSA_8050_Spring_19/2pm_6/Vader_Results')
-print(x.collect())
 
-# Non Vader Results
-#x.saveAsTextFile('/data/MSA_8050_Spring_19/2pm_6/Normal_Results_binary')
+print(x.collect())
+x.saveAsTextFile('../../output/python_sample')
+
