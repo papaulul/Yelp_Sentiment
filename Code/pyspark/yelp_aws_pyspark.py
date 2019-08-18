@@ -28,7 +28,8 @@ Schema - Readin
  |-- useful: long (nullable = true)
  |-- user_id: string (nullable = true)
 """
-readin = spark.read.json("s3://yelp-spark-project/yelp_academic_dataset_review_sample.json") 
+#readin = spark.read.json("s3://yelp-spark-project/yelp_academic_dataset_review_sample.json") 
+readin = spark.read.json("s3://yelp-spark-project/yelp_academic_dataset_review.json") 
 # Local
 # There are 100 rows
 # Prints the Schema for the read in 
@@ -109,5 +110,5 @@ x = sc.parallelize(
     )
 
 print(x.collect())
-x.saveAsTextFile('s3://yelp-spark-project/output/python_sample')
+x.saveAsTextFile('s3://yelp-spark-project/output/python_full')
 

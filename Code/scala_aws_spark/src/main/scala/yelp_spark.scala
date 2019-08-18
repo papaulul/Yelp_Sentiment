@@ -13,7 +13,8 @@ object SparkPi {
     val sc = new SparkContext(conf:SparkConf)
     val spark = SparkSession.builder.getOrCreate()
     val time = System.nanoTime
-    val readin = spark.read.json("s3://yelp-spark-project/yelp_academic_dataset_review_sample.json")
+    //val readin = spark.read.json("s3://yelp-spark-project/yelp_academic_dataset_review_sample.json")
+    val readin = spark.read.json("s3://yelp-spark-project/yelp_academic_dataset_review.json")
     println(readin.printSchema())
     val columns = Seq("review_id","text","label")
     val text_to_token = readin.select("review_id","text","stars").toDF(columns: _*)
@@ -70,7 +71,7 @@ object SparkPi {
       )
     )
     x.collect().foreach(println)
-    x.saveAsTextFile("s3://yelp-spark-project/output/scala_sample")
+    x.saveAsTextFile("s3://yelp-spark-project/output/scala_full")
     spark.stop()
   }
 }
