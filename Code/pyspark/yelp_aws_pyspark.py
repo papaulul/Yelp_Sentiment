@@ -9,6 +9,13 @@ import time
 from pyspark.ml import PipelineModel
 # This is the timer 
 start_time = time.time()
+def stars_sent(x):
+    if x < 3: 
+        return 1
+    elif x > 3: 
+        return 3
+    else: return 2
+
 # Makes sure we have the stop words
 # Set of all stopwords 
 # Setting up spark context 
@@ -45,7 +52,7 @@ print(text_to_token.show())
 print(text_to_token.printSchema())
 
 # gets the right data frame only for Spark 2.2 
-text_to_token = text_to_token.rdd.map(lambda x: [x[0],x[1],x[2]]).toDF(['review_id','text','label'])
+text_to_token = text_to_token.rdd.map(lambda x: [x[0],x[1],stars_sent(x[2])]).toDF(['review_id','text','label'])
 
 # convert "stars" to a binary variable Spark 1.6
 #text_to_token = text_to_token.rdd.map(lambda x: [x[0],x[1],binary_lablel(x[2])]).toDF(['review_id','text','label'])
